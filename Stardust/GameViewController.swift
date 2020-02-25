@@ -14,7 +14,7 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() { // вызов метода супер-класса, дальнейшая загрузка сцены 
         super.viewDidLoad()
-        let scene = GameScene(size: CGSize(width: 1536, height: 2048))
+        let scene = GameScene(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         let skView = self.view as! SKView
         skView.showsFPS = true // устанавливаем отображение FPS на экране
         skView.showsNodeCount = true
@@ -23,7 +23,6 @@ class GameViewController: UIViewController {
         skView.presentScene(scene)
         
     }
-
     
     override var prefersStatusBarHidden: Bool {
         return true
