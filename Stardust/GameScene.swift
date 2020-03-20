@@ -20,6 +20,7 @@ class GameScene: SKScene {
     let deviceHeight = UIScreen.main.bounds.height
     var touchLocation: CGPoint?
     let girlAnimation: SKAction
+    let asteroidAnimation: SKAction
     
     override init(size: CGSize) {
         let maxApectRatio: CGFloat = deviceHeight / deviceWidth
@@ -33,6 +34,11 @@ class GameScene: SKScene {
             texturesGirl.append(SKTexture(imageNamed: "GG\(i)"))
         }
         girlAnimation = SKAction.animate(with: texturesGirl, timePerFrame: 0.1)
+        var texturesAsteroid: [SKTexture] = []
+        for i in 1...6 {
+            texturesAsteroid.append(SKTexture(imageNamed: "Ast\(i)"))
+        }
+        asteroidAnimation = SKAction.animate(with: texturesAsteroid, timePerFrame: 0.05)
         super.init(size: size)
     }
     
@@ -164,12 +170,15 @@ class GameScene: SKScene {
         let actionDelete = SKAction.removeFromParent()
         let randomMove = Int.random(in: 0 ..< 3)
         if randomMove == 0 {
+            startAnimation(sprite: asteroid, spriteAction: asteroidAnimation)
             asteroid.run(SKAction.sequence([actionDownStraight, actionDelete]))
         }
         if randomMove == 1 {
+            startAnimation(sprite: asteroid, spriteAction: asteroidAnimation)
             asteroid.run(SKAction.sequence([actionDownLeft, actionDelete]))
         }
         if randomMove == 2 {
+            startAnimation(sprite: asteroid, spriteAction: asteroidAnimation)
             asteroid.run(SKAction.sequence([actionDownRight, actionDelete]))
         }
     }
