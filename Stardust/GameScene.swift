@@ -19,6 +19,7 @@ class GameScene: SKScene {
     let deviceWidth = UIScreen.main.bounds.width
     let deviceHeight = UIScreen.main.bounds.height
     var touchLocation: CGPoint?
+    let girlAnimation: SKAction
     
     override init(size: CGSize) {
         let maxApectRatio: CGFloat = deviceHeight / deviceWidth
@@ -27,6 +28,11 @@ class GameScene: SKScene {
         let playableMargin = (size.width - playableWidth) / 2.0
         // пря-ник с максимальным соотношением сторон, в центре которого находится экран
         playableRect = CGRect(x: 0, y: playableMargin, width: playableWidth, height: size.height)
+        var texturesGirl:[SKTexture] = []
+        for i in 1...6 {
+            texturesGirl.append(SKTexture(imageNamed: "GG\(i)"))
+        }
+        girlAnimation = SKAction.animate(with: texturesGirl, timePerFrame: 0.1)
         super.init(size: size)
     }
     
@@ -64,6 +70,7 @@ class GameScene: SKScene {
             if distance <= girlMovePointsPerSec * CGFloat(deltaTime) {
                 velocity = CGPoint.zero
                 girl.position = touchLocation!
+                stopAnimation(sprite: girl, spriteAction: girlAnimation)
             }
             else {
                 move(sprite: girl, velocity: velocity)
@@ -83,6 +90,7 @@ class GameScene: SKScene {
     }
     
     func moveGirl(location: CGPoint) {
+        startAnimation(sprite: girl, spriteAction: girlAnimation)
         let offset = CGPoint(x:location.x - girl.position.x, y:location.y - girl.position.y)
         let length = sqrt(pow(offset.x, 2) + pow(offset.y, 2))
         let direction = CGPoint(x: offset.x / CGFloat(length), y: offset.y / CGFloat(length)) // нормированный вектор
@@ -164,5 +172,15 @@ class GameScene: SKScene {
         if randomMove == 2 {
             asteroid.run(SKAction.sequence([actionDownRight, actionDelete]))
         }
+    }
+    
+    func startAnimation(sprite: SKSpriteNode, spriteAction:SKAction) {
+        if sprite.action(forKey: "animation") == nil {
+            sprite.run(SKAction.repeatForever(spriteAction), withKey: "animation")
+        }
+    }
+    
+    func stopAnimation(sprite: SKSpriteNode, spriteAction:SKAction) {
+        sprite.removeAction(forKey: "animation")
     }
 }
