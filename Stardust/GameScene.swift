@@ -13,7 +13,7 @@ class GameScene: SKScene {
     let girl = SKSpriteNode(imageNamed: "GG1")
     var lastUpdateTime: TimeInterval = 0
     var deltaTime: TimeInterval = 0
-    let girlMovePointsPerSec: CGFloat = 250.0
+    let girlMovePointsPerSec: CGFloat = 400.0
     var velocity = CGPoint.zero // вектор скорости спрайта (кол-во точек / сек)
     let playableRect: CGRect
     let deviceWidth = UIScreen.main.bounds.width
@@ -21,6 +21,7 @@ class GameScene: SKScene {
     var touchLocation: CGPoint?
     let girlAnimation: SKAction
     let asteroidAnimation: SKAction
+    let starAnimation: SKAction
     
     override init(size: CGSize) {
         let maxApectRatio: CGFloat = deviceHeight / deviceWidth
@@ -39,6 +40,11 @@ class GameScene: SKScene {
             texturesAsteroid.append(SKTexture(imageNamed: "Ast\(i)"))
         }
         asteroidAnimation = SKAction.animate(with: texturesAsteroid, timePerFrame: 0.05)
+        var texturesStar: [SKTexture] = []
+        for i in 1...6 {
+            texturesStar.append(SKTexture(imageNamed: "Star\(i)"))
+        }
+        starAnimation = SKAction.animate(with: texturesStar, timePerFrame: 0.05)
         super.init(size: size)
     }
     
@@ -59,6 +65,10 @@ class GameScene: SKScene {
             [weak self] in self?.generateAsteroid()
         }),
                                                       SKAction.wait(forDuration: 5.0)])))
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.run({
+            [weak self] in self?.generateStars()
+        }),
+                                                      SKAction.wait(forDuration: 1.0)])))
         drawPlayableArea()
     }
     override func update(_ currentTime: TimeInterval) {
@@ -181,6 +191,22 @@ class GameScene: SKScene {
             startAnimation(sprite: asteroid, spriteAction: asteroidAnimation)
             asteroid.run(SKAction.sequence([actionDownRight, actionDelete]))
         }
+    }
+    
+    func generateStars() {
+        let timeIntervalStar: TimeInterval = TimeInterval(Float.random(in: 1.5...5))
+        let star = SKSpriteNode(imageNamed: "Star1")
+        star.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        let positionX = Int.random(in: 0 ... Int(size.width))
+        star.position = CGPoint(x: positionX, y: Int(size.height) + Int(star.size.height) / 2)
+        addChild(star)
+        let actionAppearance = SKAction.scale(to: 0.9, duration: 4)
+        let actionFall = SKAction.move(to: CGPoint(x: positionX, y: 0 - Int(star.size.height) / 2), duration: timeIntervalStar)
+        let actionDelete = SKAction.removeFromParent()
+        let actionGroup = SKAction.group([actionFall, actionAppearance])
+        let sequence = SKAction.sequence([actionGroup, actionDelete])
+        startAnimation(sprite: star, spriteAction: starAnimation)
+        star.run(sequence)
     }
     
     func startAnimation(sprite: SKSpriteNode, spriteAction:SKAction) {
