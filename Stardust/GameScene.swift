@@ -19,12 +19,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let deviceWidth = UIScreen.main.bounds.width
     let deviceHeight = UIScreen.main.bounds.height
     var touchLocation: CGPoint?
+    
     let girlAnimation: SKAction
     let asteroidAnimation: SKAction
     let starAnimation: SKAction
+    
     let girlCategory:UInt32 = 0x1 << 1;
     let asteroidCategory:UInt32 = 0x1 << 2;
     let starCategory:UInt32 = 0x1 << 3;
+    
+    var isImmortal: Bool = false
     
     override init(size: CGSize) {
         let maxApectRatio: CGFloat = deviceHeight / deviceWidth
@@ -76,14 +80,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         addChild(girl)
         
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.run({
-            [weak self] in self?.generateAsteroid()
-        }),
-                                                      SKAction.wait(forDuration: 5.0)])))
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.run({
-            [weak self] in self?.generateStars()
-        }),
-                                                      SKAction.wait(forDuration: 1.0)])))
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 5.0),
+                                                      SKAction.run({
+                                                        [weak self] in self?.generateAsteroid()
+                                                      })])))
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 1.0),
+                                                      SKAction.run({
+                                                        [weak self] in self?.generateStars()
+                                                      })])))
         drawPlayableArea()
     }
     override func update(_ currentTime: TimeInterval) {
@@ -247,9 +251,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func collision(between girl: SKNode, object: SKNode) {
         if object.name == "star" {
+            let i = Int.random(in: 1...4)
+            run(SKAction.playSoundFileNamed("Star\(i).wav", waitForCompletion: false))
             destroy(object: object)
         }
         if object.name == "asteroid" {
+            let blinksAmount = 10.0
+            let duration = 3.0
+            let actionBlink = SKAction.customAction(withDuration: duration, actionBlock: {(node, elapsedTime) in
+                let slice = duration / blinksAmount
+                let reminder = Double(elapsedTime).truncatingRemainder(dividingBy: slice)
+                node.isHidden = reminder > slice / 2
+            })
+            let actionInvisible = SKAction.run { [weak self] in
+                self?.girl.isHidden = false
+                self?.isImmortal = false
+            }
+            girl.run(SKAction.sequence([actionBlink, actionInvisible]))
+            self.isImmortal = false
+            let i = Int.random(in: 1...2)
+            run(SKAction.playSoundFileNamed("Ast\(i).wav", waitForCompletion: false))
             destroy(object: object)
         }
     }
@@ -262,10 +283,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let nodeA = contact.bodyA.node else {return}
         guard let nodeB = contact.bodyB.node else {return}
         if contact.bodyA.node?.name == "girl" {
-            collision(between: nodeA, object: nodeB)
+            if contact.bodyB.node?.name == "asteroid" && isImmortal == false || contact.bodyB.node?.name == "star" {
+                collision(between: nodeA, object: nodeB)
+            }
         }
         if contact.bodyB.node?.name == "girl" {
-            collision(between: nodeB, object: nodeA)
+            if contact.bodyA.node?.name == "asteroid" && isImmortal == false || contact.bodyA.node?.name == "star" {
+                collision(between: nodeB, object: nodeA)
+            }
         }
     }
 }
