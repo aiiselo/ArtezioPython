@@ -83,11 +83,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         addChild(girl)
         
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 5.0),
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 3.0),
                                                       SKAction.run({
                                                         [weak self] in self?.generateAsteroid()
                                                       })])))
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 1.0),
+        run(SKAction.repeatForever(SKAction.sequence([SKAction.wait(forDuration: 0.8),
                                                       SKAction.run({
                                                         [weak self] in self?.generateStars()
                                                       })])))
@@ -206,7 +206,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func generateAsteroid() {
-        let timeIntervalAsteroid: TimeInterval = TimeInterval(Float.random(in: 2 ... 3))
+        let timeIntervalAsteroid: TimeInterval = TimeInterval(Float.random(in: 1 ... 3))
         let asteroid = SKSpriteNode(imageNamed: "Ast1")
         asteroid.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         asteroid.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: asteroid.size.width - 50, height: asteroid.size.height - 50))
@@ -238,7 +238,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func generateStars() {
-        let timeIntervalStar: TimeInterval = TimeInterval(Float.random(in: 3...5))
+        let timeIntervalStar: TimeInterval = TimeInterval(Float.random(in: 1...5))
         let star = SKSpriteNode(imageNamed: "Star1")
         star.physicsBody = SKPhysicsBody(rectangleOf: star.size)
         star.name = "star"

@@ -27,16 +27,17 @@ class GameOver: SKScene {
         let background: SKSpriteNode
         if victory {
             background = SKSpriteNode(imageNamed: "victoryOver")
+            background.position = CGPoint(x: deviceWidth/2 - 35, y: deviceHeight/2)
             let actionVictoryMusic = SKAction.playSoundFileNamed("victory.wav", waitForCompletion: true)
             run(actionVictoryMusic)
         }
         else {
             background = SKSpriteNode(imageNamed: "failOver")
+            background.position = CGPoint(x: deviceWidth/2, y: deviceHeight/2)
             let actionFailMusic = SKAction.playSoundFileNamed("lose.wav", waitForCompletion: true)
             run(actionFailMusic)
         }
         background.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        background.position = CGPoint(x: deviceWidth/2 - 35, y: deviceHeight/2)
         background.size = CGSize(width: background.size.width / (background.size.height / deviceHeight), height: deviceHeight)
         addChild(background)
         
