@@ -16,6 +16,7 @@
 		0A1E86322492530D008E2FCB /* Star4.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0A1E86292492530D008E2FCB /* Star4.wav */; };
 		0A1E86332492530D008E2FCB /* Ast2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0A1E862A2492530D008E2FCB /* Ast2.wav */; };
 		0A1E86342492530D008E2FCB /* Ast1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 0A1E862B2492530D008E2FCB /* Ast1.wav */; };
+		0A1E863624926661008E2FCB /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1E863524926661008E2FCB /* GameOver.swift */; };
 		0A663F74248E92990094FECC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A663F73248E92990094FECC /* AppDelegate.swift */; };
 		0A663F7A248E92990094FECC /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A663F79248E92990094FECC /* GameScene.swift */; };
 		0A663F7C248E92990094FECC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A663F7B248E92990094FECC /* GameViewController.swift */; };
@@ -53,6 +54,7 @@
 		0A1E86292492530D008E2FCB /* Star4.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Star4.wav; sourceTree = "<group>"; };
 		0A1E862A2492530D008E2FCB /* Ast2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ast2.wav; sourceTree = "<group>"; };
 		0A1E862B2492530D008E2FCB /* Ast1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ast1.wav; sourceTree = "<group>"; };
+		0A1E863524926661008E2FCB /* GameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
 		0A663F70248E92990094FECC /* Stardust.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stardust.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A663F73248E92990094FECC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A663F79248E92990094FECC /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				0A663F80248E929B0094FECC /* Assets.xcassets */,
 				0A663F82248E929B0094FECC /* LaunchScreen.storyboard */,
 				0A663F85248E929B0094FECC /* Info.plist */,
+				0A1E863524926661008E2FCB /* GameOver.swift */,
 			);
 			path = Stardust;
 			sourceTree = "<group>";
@@ -306,6 +309,7 @@
 				0A663F7A248E92990094FECC /* GameScene.swift in Sources */,
 				0A663F7C248E92990094FECC /* GameViewController.swift in Sources */,
 				0A663F74248E92990094FECC /* AppDelegate.swift in Sources */,
+				0A1E863624926661008E2FCB /* GameOver.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

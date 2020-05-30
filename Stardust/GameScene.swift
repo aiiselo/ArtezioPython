@@ -29,6 +29,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let starCategory:UInt32 = 0x1 << 3;
     
     var isImmortal: Bool = false
+    var lives = 3
+    var gameResult: Bool = false
+    var stars = 0
     
     override init(size: CGSize) {
         let maxApectRatio: CGFloat = deviceHeight / deviceWidth
@@ -117,6 +120,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        move(sprite: girl, velocity: velocity)
 //        flipSprite(sprite: girl, velocity: velocity)
 //        boundsCheck()
+        if lives <= 0 || stars >= 20 {
+            if lives <= 0 {
+                self.gameResult = false
+                let gameOverScene = GameOver(victory: gameResult, size: size)
+                gameOverScene.scaleMode = scaleMode
+                let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
+                view?.presentScene(gameOverScene, transition: transition)
+            }
+            else {
+                self.gameResult = true
+                let gameOverScene = GameOver(victory: gameResult, size: size)
+                gameOverScene.scaleMode = scaleMode
+                let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
+                view?.presentScene(gameOverScene, transition: transition)
+            }
+        }
     }
     
     func move(sprite: SKSpriteNode, velocity: CGPoint){
@@ -251,11 +270,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func collision(between girl: SKNode, object: SKNode) {
         if object.name == "star" {
+            self.stars += 1
+            if self.stars >= 20 {
+                if lives <= 0 {
+                    self.gameResult = false
+                    let gameOverScene = GameOver(victory: gameResult, size: size)
+                    gameOverScene.scaleMode = scaleMode
+                    let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
+                    view?.presentScene(gameOverScene, transition: transition)
+                }
+                else {
+                    self.gameResult = true
+                    let gameOverScene = GameOver(victory: gameResult, size: size)
+                    gameOverScene.scaleMode = scaleMode
+                    let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
+                    view?.presentScene(gameOverScene, transition: transition)
+                }
+            }
             let i = Int.random(in: 1...4)
             run(SKAction.playSoundFileNamed("Star\(i).wav", waitForCompletion: false))
             destroy(object: object)
         }
         if object.name == "asteroid" {
+            if self.stars >= 2 {
+                self.stars -= 2
+            }
+            lives -= 1
+            if lives <= 0 {
+                if lives <= 0 {
+                    self.gameResult = false
+                    let gameOverScene = GameOver(victory: gameResult, size: size)
+                    gameOverScene.scaleMode = scaleMode
+                    let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
+                    view?.presentScene(gameOverScene, transition: transition)
+                }
+                else {
+                    self.gameResult = true
+                    let gameOverScene = GameOver(victory: gameResult, size: size)
+                    gameOverScene.scaleMode = scaleMode
+                    let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
+                    view?.presentScene(gameOverScene, transition: transition)
+                }
+                return
+            }
             let blinksAmount = 10.0
             let duration = 3.0
             let actionBlink = SKAction.customAction(withDuration: duration, actionBlock: {(node, elapsedTime) in
@@ -292,5 +349,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 collision(between: nodeB, object: nodeA)
             }
         }
+    }
+    
+    func looseStars(){
+        
     }
 }
