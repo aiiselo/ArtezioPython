@@ -45,7 +45,7 @@ class GameOver: SKScene {
         let actionReturn = SKAction.run {
             let defaultScene = GameScene(size: self.size)
             defaultScene.scaleMode = self.scaleMode
-            let transition = SKTransition.fade(with: SKColor.white, duration: 1.5)
+            let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:2)!, duration: 1)
             self.view?.presentScene(defaultScene, transition: transition)
         }
         

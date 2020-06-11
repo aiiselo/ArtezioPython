@@ -280,14 +280,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.gameResult = false
                     let gameOverScene = GameOver(victory: gameResult, size: size)
                     gameOverScene.scaleMode = scaleMode
-                    let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
+                    let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
                     view?.presentScene(gameOverScene, transition: transition)
                 }
                 else {
                     self.gameResult = true
                     let gameOverScene = GameOver(victory: gameResult, size: size)
                     gameOverScene.scaleMode = scaleMode
-                    let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
+                    let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
                     view?.presentScene(gameOverScene, transition: transition)
                 }
             }
@@ -305,7 +305,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.gameResult = false
                     let gameOverScene = GameOver(victory: gameResult, size: size)
                     gameOverScene.scaleMode = scaleMode
-                    let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
+                    let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
                     view?.presentScene(gameOverScene, transition: transition)
                     stopBackgroundMusic()
                 }
@@ -313,7 +313,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.gameResult = true
                     let gameOverScene = GameOver(victory: gameResult, size: size)
                     gameOverScene.scaleMode = scaleMode
-                    let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
+                    let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
                     view?.presentScene(gameOverScene, transition: transition)
                     stopBackgroundMusic()
                 }
