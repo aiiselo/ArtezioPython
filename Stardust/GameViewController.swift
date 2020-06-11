@@ -14,7 +14,7 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() { // вызов метода супер-класса, дальнейшая загрузка сцены 
         super.viewDidLoad()
-        let scene = GameScene(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+        let scene = MenuScene(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         let skView = self.view as! SKView
         skView.showsFPS = true // устанавливаем отображение FPS на экране
         skView.showsNodeCount = true

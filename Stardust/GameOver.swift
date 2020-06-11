@@ -27,7 +27,7 @@ class GameOver: SKScene {
         let background: SKSpriteNode
         if victory {
             background = SKSpriteNode(imageNamed: "victoryOver")
-            background.position = CGPoint(x: deviceWidth/2 - 35, y: deviceHeight/2)
+            background.position = CGPoint(x: deviceWidth/2, y: deviceHeight/2)
             let actionVictoryMusic = SKAction.playSoundFileNamed("victory.wav", waitForCompletion: true)
             run(actionVictoryMusic)
         }

@@ -56,6 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             texturesStar.append(SKTexture(imageNamed: "Star\(i)"))
         }
         starAnimation = SKAction.animate(with: texturesStar, timePerFrame: 0.05)
+        playBackgroundMusic()
         super.init(size: size)
     }
     
@@ -92,6 +93,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                                         [weak self] in self?.generateStars()
                                                       })])))
         drawPlayableArea()
+        playBackgroundMusic()
     }
     override func update(_ currentTime: TimeInterval) {
         if lastUpdateTime > 0 {
@@ -127,6 +129,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 gameOverScene.scaleMode = scaleMode
                 let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
                 view?.presentScene(gameOverScene, transition: transition)
+                stopBackgroundMusic()
             }
             else {
                 self.gameResult = true
@@ -134,6 +137,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 gameOverScene.scaleMode = scaleMode
                 let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
                 view?.presentScene(gameOverScene, transition: transition)
+                stopBackgroundMusic()
             }
         }
     }
@@ -303,6 +307,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     gameOverScene.scaleMode = scaleMode
                     let transition = SKTransition.fade(with: SKColor.red, duration: 1.5)
                     view?.presentScene(gameOverScene, transition: transition)
+                    stopBackgroundMusic()
                 }
                 else {
                     self.gameResult = true
@@ -310,6 +315,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     gameOverScene.scaleMode = scaleMode
                     let transition = SKTransition.fade(with: SKColor.green, duration: 1.5)
                     view?.presentScene(gameOverScene, transition: transition)
+                    stopBackgroundMusic()
                 }
                 return
             }
@@ -349,9 +355,5 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 collision(between: nodeB, object: nodeA)
             }
         }
-    }
-    
-    func looseStars(){
-        
     }
 }
