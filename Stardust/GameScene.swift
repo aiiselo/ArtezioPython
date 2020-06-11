@@ -10,12 +10,19 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+
+    let cameraNode = SKCameraNode()
+    
     let girl = SKSpriteNode(imageNamed: "GG1")
     var lastUpdateTime: TimeInterval = 0
     var deltaTime: TimeInterval = 0
-    let girlMovePointsPerSec: CGFloat = 400.0
+    let girlMovePointsPerSec: CGFloat = 500.0
+    let cameraMovePointsPerSec: CGFloat = 100.0
     var velocity = CGPoint.zero // вектор скорости спрайта (кол-во точек / сек)
+    
     let playableRect: CGRect
+    var cameraRect: CGRect
+    
     let deviceWidth = UIScreen.main.bounds.width
     let deviceHeight = UIScreen.main.bounds.height
     var touchLocation: CGPoint?
@@ -29,9 +36,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let starCategory:UInt32 = 0x1 << 3;
     
     var isImmortal: Bool = false
-    var lives = 3
+    let defaultLives = 5
+    var lives = 5
     var gameResult: Bool = false
     var stars = 0
+    let maxStars = 20
+    
+    let livesLabel = SKLabelNode(fontNamed: "ArialRoundedMTBold")
+    let starsLabel = SKLabelNode(fontNamed: "ArialRoundedMTBold")
+
     
     override init(size: CGSize) {
         let maxApectRatio: CGFloat = deviceHeight / deviceWidth
@@ -57,6 +70,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         starAnimation = SKAction.animate(with: texturesStar, timePerFrame: 0.05)
         playBackgroundMusic()
+        
+        self.cameraRect = CGRect(x: cameraNode.position.x - size.width / 2 + (size.width - playableRect.width) / 2, y: cameraNode.position.y - size.height / 2 + (size.height - playableRect.height) / 2, width: playableRect.width, height: playableRect.height)
+        
         super.init(size: size)
     }
     
@@ -68,14 +84,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.contactDelegate = self
         
         backgroundColor = SKColor.black // начальные настройки сцены
-        let background = SKSpriteNode(imageNamed: "backgroundSpace")
-        background.anchorPoint = CGPoint(x: 0, y: 0)
-        background.position = CGPoint(x: 0, y: 0)
-        background.size = CGSize(width: background.size.width / (background.size.height / deviceHeight), height: deviceHeight)
-        background.zPosition = -1
-        addChild(background)
+        for i in 0...1 {
+            let background = generateBackground()
+            background.anchorPoint = CGPoint.zero
+            background.name = "background"
+            background.position = CGPoint(x: 0, y: background.size.height * CGFloat(i))
+            addChild(background)
+        }
         
-        girl.position = CGPoint(x: background.size.width / 2, y: 250)
+        girl.position = CGPoint(x: deviceWidth / 2, y: self.size.height / 4)
         girl.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: girl.size.width - 50, height: girl.size.height - 50))
         girl.physicsBody!.contactTestBitMask = starCategory + asteroidCategory
         girl.name = "girl"
@@ -94,7 +111,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                                       })])))
         drawPlayableArea()
         playBackgroundMusic()
+        addChild(cameraNode)
+        self.camera = cameraNode
+        cameraNode.position = CGPoint(x:self.size.width / 2, y: self.size.height / 2)
+        
+        //livesLabel.text = updateLives(defaultLives: defaultLives, lives: lives).text
+        livesLabel.text = updateLives(defaultLives: defaultLives, lives: lives).text
+        livesLabel.fontColor = SKColor.white
+        livesLabel.fontSize = 25
+        livesLabel.zPosition = 150
+        livesLabel.position = CGPoint(x: Int(self.cameraRect.maxX - 10) , y: Int(self.cameraRect.maxY - 60))
+        livesLabel.horizontalAlignmentMode = .right
+        cameraNode.addChild(livesLabel)
+        
+        starsLabel.text = "⭐️ \(stars)/\(maxStars)"
+        starsLabel.fontSize = 25
+        starsLabel.zPosition = 150
+        starsLabel.position = CGPoint(x: Int(self.cameraRect.maxX - 10) , y: Int(self.cameraRect.maxY - 90))
+        starsLabel.horizontalAlignmentMode = .right
+        cameraNode.addChild(starsLabel)
+        
+//        print("self size: \(self.size.width),  \(self.size.height)")
+//        print("camera position: \(camera?.position.x), \(camera?.position.y)")
+        
     }
+    
     override func update(_ currentTime: TimeInterval) {
         if lastUpdateTime > 0 {
             deltaTime = currentTime - lastUpdateTime
@@ -121,8 +162,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
 //        move(sprite: girl, velocity: velocity)
 //        flipSprite(sprite: girl, velocity: velocity)
-//        boundsCheck()
-        if lives <= 0 || stars >= 20 {
+        boundsCheck()
+        if lives <= 0 || stars >= maxStars {
             if lives <= 0 {
                 self.gameResult = false
                 let gameOverScene = GameOver(victory: gameResult, size: size)
@@ -140,11 +181,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 stopBackgroundMusic()
             }
         }
+        moveCamera()
+        starsLabel.text = "⭐️ \(stars)/\(maxStars)"
+        livesLabel.text = updateLives(defaultLives: defaultLives, lives: lives).text
     }
     
     func move(sprite: SKSpriteNode, velocity: CGPoint){
         let amountToMove = CGPoint(x: velocity.x * CGFloat(deltaTime), y: velocity.y * CGFloat(deltaTime))
         sprite.position = CGPoint(x: sprite.position.x + amountToMove.x, y: sprite.position.y + amountToMove.y)
+    }
+    
+    func moveCamera() {
+        cameraNode.position = CGPoint(x: cameraNode.position.x, y: cameraNode.position.y + cameraMovePointsPerSec * CGFloat(deltaTime))
+        self.cameraRect = CGRect(x: cameraNode.position.x - size.width / 2 + (size.width - playableRect.width) / 2, y: cameraNode.position.y - size.height / 2 + (size.height - playableRect.height) / 2, width: playableRect.width, height: playableRect.height)
+        enumerateChildNodes(withName: "background") { (node, stop) in
+            let bg = node as!SKSpriteNode
+            if bg.position.y + bg.size.height < self.cameraRect.origin.y { // если один из экранов полностью прокрутился, то перемещаем вперед
+                bg.position = CGPoint(x: bg.position.x, y: bg.position.y + bg.size.height * 2)
+            }
+        }
     }
     
     func moveGirl(location: CGPoint) {
@@ -172,9 +227,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /** UNCOMMENT FOR ANOTHER GIRL MOVING */
     
-//     func boundsCheck(){
-//         let bottomLeft = CGPoint(x: 0, y: playableRect.minY)
-//         let topRight = CGPoint(x: playableRect.maxX, y: playableRect.maxY)
+     func boundsCheck(){
+         let bottomLeft = CGPoint(x: 0, y: cameraRect.minY)
+         //let topRight = CGPoint(x: cameraRect.maxX, y: cameraRect.maxY)
 //         if bottomLeft.x >= girl.position.x {
 //             girl.position.x = bottomLeft.x
 //             velocity.x *= -1
@@ -183,15 +238,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //             girl.position.x = topRight.x
 //             velocity.x *= -1
 //         }
-//         if bottomLeft.y >= girl.position.y {
-//             girl.position.y = bottomLeft.y
-//             velocity.y *= -1
-//         }
+         if bottomLeft.y >= girl.position.y - girl.size.height/2 {
+            girl.position.y = bottomLeft.y + girl.size.height/2 + 1
+             //velocity.y *= -1
+         }
 //         if topRight.y <= girl.position.y {
 //             girl.position.y = topRight.y
 //             velocity.y *= -1
 //         }
-//     }
+     }
 
     func drawPlayableArea() {
         let shape = SKShapeNode()
@@ -209,8 +264,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func generateBackground() -> SKSpriteNode {
+        let background = SKSpriteNode()
+        background.anchorPoint = CGPoint(x: 0, y: 0)
+        background.name = "background"
+        
+        let background1 = SKSpriteNode(imageNamed: "backgroundSpace")
+        background1.anchorPoint = CGPoint(x: 0, y: 0)
+        background1.position = CGPoint(x: 0, y: 0)
+        let width = background1.size.width / (background1.size.height / deviceHeight)
+        background1.size = CGSize(width: width, height: deviceHeight)
+        background.addChild(background1)
+//        print("background1 size: \(background1.size.width), \(background1.size.height)")
+        
+        let background2 = SKSpriteNode(imageNamed: "backgroundSpace")
+        background2.anchorPoint = CGPoint(x: 0, y: 0)
+        background2.position = CGPoint(x: 0, y: background1.size.height)
+        background2.size = CGSize(width: width, height: deviceHeight)
+        background.addChild(background2)
+//        print("background2 size: \(background2.size.width), \(background2.size.height)")
+        
+        background.size = CGSize(width: width, height: deviceHeight * 2)
+//        print("background size: \(background.size.width), \(background.size.height)")
+        background.zPosition = -1
+        return background
+    }
+    
     func generateAsteroid() {
-        let timeIntervalAsteroid: TimeInterval = TimeInterval(Float.random(in: 1 ... 3))
+        let timeIntervalAsteroid: TimeInterval = TimeInterval(Float.random(in: 2 ... 3))
         let asteroid = SKSpriteNode(imageNamed: "Ast1")
         asteroid.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         asteroid.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: asteroid.size.width - 50, height: asteroid.size.height - 50))
@@ -219,7 +300,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         asteroid.physicsBody?.categoryBitMask = asteroidCategory
         
         let positionX = Int.random(in: 0 ... Int(size.width))
-        asteroid.position = CGPoint(x: positionX, y: Int(size.height) + Int(asteroid.size.height) / 2)
+        asteroid.position = CGPoint(x: positionX, y: Int(self.cameraRect.maxY + asteroid.size.height/2))
         addChild(asteroid)
         let actionDownStraight = SKAction.move(to: CGPoint(x: positionX, y: 0 - Int(asteroid.size.height) / 2), duration: timeIntervalAsteroid)
         let actionDownRight = SKAction.move(to: CGPoint(x: Int(size.width)/2 + Int(size.width)/4, y: 0 - Int(asteroid.size.height) / 2), duration: timeIntervalAsteroid)
@@ -242,7 +323,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func generateStars() {
-        let timeIntervalStar: TimeInterval = TimeInterval(Float.random(in: 1...5))
+        let timeIntervalStar: TimeInterval = TimeInterval(Float.random(in: 3...5))
         let star = SKSpriteNode(imageNamed: "Star1")
         star.physicsBody = SKPhysicsBody(rectangleOf: star.size)
         star.name = "star"
@@ -251,7 +332,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         star.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
         let positionX = Int.random(in: 0 ... Int(size.width))
-        star.position = CGPoint(x: positionX, y: Int(size.height) + Int(star.size.height) / 2)
+        star.position = CGPoint(x: positionX, y: Int(self.cameraRect.maxY + star.size.height / 2))
         addChild(star)
         let actionAppearance = SKAction.scale(to: 0.9, duration: 4)
         let actionFall = SKAction.move(to: CGPoint(x: positionX, y: 0 - Int(star.size.height) / 2), duration: timeIntervalStar)
@@ -275,7 +356,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func collision(between girl: SKNode, object: SKNode) {
         if object.name == "star" {
             self.stars += 1
-            if self.stars >= 20 {
+            if self.stars >= maxStars {
                 if lives <= 0 {
                     self.gameResult = false
                     let gameOverScene = GameOver(victory: gameResult, size: size)
@@ -295,6 +376,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             run(SKAction.playSoundFileNamed("Star\(i).wav", waitForCompletion: false))
             destroy(object: object)
         }
+        
         if object.name == "asteroid" {
             if self.stars >= 2 {
                 self.stars -= 2
@@ -355,5 +437,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 collision(between: nodeB, object: nodeA)
             }
         }
+    }
+    
+    func updateLives(defaultLives: Int, lives: Int) -> SKLabelNode {
+        var labelLives: String = ""
+        for _ in 0...lives-1 {
+            labelLives += String("❤️")
+        }
+        if defaultLives - lives > 0 {
+            for _ in 0...(defaultLives-lives-1) {
+                labelLives += String("🤍")
+            }
+        }
+        return SKLabelNode(text: labelLives)
     }
 }
