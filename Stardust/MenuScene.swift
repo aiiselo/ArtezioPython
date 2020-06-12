@@ -48,5 +48,4 @@ class MenuScene: SKScene {
         let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:2)!, duration: 1)
         self.view?.presentScene(defaultScene, transition: transition)
     }
-    
 }

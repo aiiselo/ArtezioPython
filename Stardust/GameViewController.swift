@@ -12,14 +12,14 @@ import GameplayKit
 
 class GameViewController: UIViewController {
 
-    override func viewDidLoad() { // вызов метода супер-класса, дальнейшая загрузка сцены 
+    override func viewDidLoad() {
         super.viewDidLoad()
         let scene = MenuScene(size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         let skView = self.view as! SKView
-        skView.showsFPS = true // устанавливаем отображение FPS на экране
+        skView.showsFPS = true
         skView.showsNodeCount = true
         skView.ignoresSiblingOrder = true
-        scene.scaleMode = .aspectFill // режимое масштабирования
+        scene.scaleMode = .aspectFill
         skView.presentScene(scene)
         
     }

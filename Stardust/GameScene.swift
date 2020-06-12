@@ -59,11 +59,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             texturesGirl.append(SKTexture(imageNamed: "GG\(i)"))
         }
         girlAnimation = SKAction.animate(with: texturesGirl, timePerFrame: 0.1)
+        
         var texturesAsteroid: [SKTexture] = []
         for i in 1...6 {
             texturesAsteroid.append(SKTexture(imageNamed: "Ast\(i)"))
         }
         asteroidAnimation = SKAction.animate(with: texturesAsteroid, timePerFrame: 0.05)
+        
         var texturesStar: [SKTexture] = []
         for i in 1...6 {
             texturesStar.append(SKTexture(imageNamed: "Star\(i)"))
@@ -109,13 +111,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                                                       SKAction.run({
                                                         [weak self] in self?.generateStars()
                                                       })])))
-        drawPlayableArea()
         playBackgroundMusic()
         addChild(cameraNode)
         self.camera = cameraNode
         cameraNode.position = CGPoint(x:self.size.width / 2, y: self.size.height / 2)
         
-        //livesLabel.text = updateLives(defaultLives: defaultLives, lives: lives).text
         livesLabel.text = updateLives(defaultLives: defaultLives, lives: lives).text
         livesLabel.fontColor = SKColor.white
         livesLabel.fontSize = 25
@@ -247,13 +247,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //             velocity.y *= -1
 //         }
      }
-
-    func drawPlayableArea() {
-        let shape = SKShapeNode()
-        shape.strokeColor = SKColor.black
-        shape.lineWidth = 8
-        addChild(shape)
-    }
     
     func flipSprite(sprite: SKSpriteNode, velocity: CGPoint) {
         if velocity.x < 0 {
@@ -272,19 +265,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let background1 = SKSpriteNode(imageNamed: "backgroundSpace")
         background1.anchorPoint = CGPoint(x: 0, y: 0)
         background1.position = CGPoint(x: 0, y: 0)
-        let width = background1.size.width / (background1.size.height / deviceHeight)
-        background1.size = CGSize(width: width, height: deviceHeight)
+        let height = background1.size.height / (background1.size.width / deviceWidth)
+        background1.size = CGSize(width: deviceWidth, height: height)
         background.addChild(background1)
 //        print("background1 size: \(background1.size.width), \(background1.size.height)")
         
         let background2 = SKSpriteNode(imageNamed: "backgroundSpace")
         background2.anchorPoint = CGPoint(x: 0, y: 0)
         background2.position = CGPoint(x: 0, y: background1.size.height)
-        background2.size = CGSize(width: width, height: deviceHeight)
+        background2.size = CGSize(width: deviceWidth, height: height)
         background.addChild(background2)
 //        print("background2 size: \(background2.size.width), \(background2.size.height)")
         
-        background.size = CGSize(width: width, height: deviceHeight * 2)
+        background.size = CGSize(width: deviceWidth, height: background1.size.height * 2)
 //        print("background size: \(background.size.width), \(background.size.height)")
         background.zPosition = -1
         return background
@@ -391,7 +384,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 stopBackgroundMusic()
             }
             let blinksAmount = 10.0
-            let duration = 3.0
+            let duration = 2.0
             let actionBlink = SKAction.customAction(withDuration: duration, actionBlock: {(node, elapsedTime) in
                 let slice = duration / blinksAmount
                 let reminder = Double(elapsedTime).truncatingRemainder(dividingBy: slice)
