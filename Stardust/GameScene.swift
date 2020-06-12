@@ -162,7 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
 //        move(sprite: girl, velocity: velocity)
 //        flipSprite(sprite: girl, velocity: velocity)
-        boundsCheck()
+        bordersCheck()
         if lives <= 0 || stars >= maxStars {
             if lives <= 0 {
                 self.gameResult = false
@@ -227,7 +227,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     /** UNCOMMENT FOR ANOTHER GIRL MOVING */
     
-     func boundsCheck(){
+     func bordersCheck(){
          let bottomLeft = CGPoint(x: 0, y: cameraRect.minY)
          //let topRight = CGPoint(x: cameraRect.maxX, y: cameraRect.maxY)
 //         if bottomLeft.x >= girl.position.x {
@@ -383,23 +383,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             lives -= 1
             if lives <= 0 {
-                if lives <= 0 {
-                    self.gameResult = false
-                    let gameOverScene = GameOver(victory: gameResult, size: size)
-                    gameOverScene.scaleMode = scaleMode
-                    let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
-                    view?.presentScene(gameOverScene, transition: transition)
-                    stopBackgroundMusic()
-                }
-                else {
-                    self.gameResult = true
-                    let gameOverScene = GameOver(victory: gameResult, size: size)
-                    gameOverScene.scaleMode = scaleMode
-                    let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
-                    view?.presentScene(gameOverScene, transition: transition)
-                    stopBackgroundMusic()
-                }
-                return
+                self.gameResult = false
+                let gameOverScene = GameOver(victory: gameResult, size: size)
+                gameOverScene.scaleMode = scaleMode
+                let transition = SKTransition.moveIn(with: SKTransitionDirection(rawValue:1)!, duration: 1)
+                view?.presentScene(gameOverScene, transition: transition)
+                stopBackgroundMusic()
             }
             let blinksAmount = 10.0
             let duration = 3.0
